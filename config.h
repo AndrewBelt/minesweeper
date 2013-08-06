@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 
+#define CONTROL_HELP 'h'
 #define CONTROL_DIG ' '
 #define CONTROL_FLAG 'z'
 #define CONTROL_QUESTION 'x'
@@ -10,6 +11,6 @@
 #define CONTROL_QUIT 'q'
 
 
-static const int wasd_speed = 5;
+#define WASD_SPEED 5
 
 #endif

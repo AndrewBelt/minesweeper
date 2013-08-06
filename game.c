@@ -1,6 +1,7 @@
 #include "game.h"
 #include "config.h"
 #include "hud.h"
+#include "help.h"
 #include <curses.h>
 
 
@@ -30,7 +31,7 @@ void game_start(struct game_t *game)
 	initialize_gui();
 	refresh();
 	
-	game->game_window = newwin(game->grid.height, game->grid.width * 2, 2, 0);
+	game->game_window = grid_new_window(&game->grid);
 	game->hud_window = newwin(2, game->grid.width * 2, 0, 0);
 	
 	game->state = GAME_PLAYING;
@@ -73,6 +74,10 @@ void game_handle_key(struct game_t *game, int ch)
 	{
 		/* Controller keys (defined in config.h) */
 		
+		case CONTROL_HELP:
+			print_help();
+			break;
+		
 		case CONTROL_DIG: game_dig(game);
 			break;
 		
@@ -109,50 +114,16 @@ void game_handle_key(struct game_t *game, int ch)
 		case KEY_DOWN: game_move_cursor(game, 0, 1);
 			break;
 		
-		case 'a': game_move_cursor(game, -wasd_speed, 0);
+		case 'a': game_move_cursor(game, -WASD_SPEED, 0);
 			break;
 		
-		case 'd': game_move_cursor(game, wasd_speed, 0);
+		case 'd': game_move_cursor(game, WASD_SPEED, 0);
 			break;
 		
-		case 'w': game_move_cursor(game, 0, -wasd_speed);
+		case 'w': game_move_cursor(game, 0, -WASD_SPEED);
 			break;
 		
-		case 's': game_move_cursor(game, 0, wasd_speed);
-			break;
-		
-		/* Non-keys */
-		
-		case KEY_MOUSE:
-		{
-			MEVENT event;
-			getmouse(&event);
-			game_handle_mouse(game, &event);
-			break;
-		}
-	}
-}
-
-
-void game_handle_mouse(struct game_t *game, MEVENT *event)
-{
-	/* Get the grid coordinates of the click event */
-	int win_x = event->x - getbegx(game->game_window);
-	int win_y = event->y - getbegy(game->game_window);
-	
-	if (win_x % 2)
-		return;
-	
-	/* Update the cursor position */
-	game->cursor_x = win_x / 2;
-	game->cursor_y = win_y;
-	
-	/* Handle the click by type */
-	switch (event->bstate)
-	{
-		/* Left click */
-		case BUTTON1_CLICKED:
-			game_dig(game);
+		case 's': game_move_cursor(game, 0, WASD_SPEED);
 			break;
 	}
 }
@@ -160,6 +131,9 @@ void game_handle_mouse(struct game_t *game, MEVENT *event)
 
 void game_dig(struct game_t *game)
 {
+	if (game->state != GAME_PLAYING)
+		return;
+	
 	if (grid_is_bomb(&game->grid, game->cursor_x, game->cursor_y))
 	{
 		game_lose(game);
@@ -206,6 +180,7 @@ void game_refresh(struct game_t *game)
 {
 	hud_display(game);
 	grid_display(&game->grid, game->game_window);
+	
 	game_update_cursor(game);
 	refresh();
 }
@@ -242,8 +217,8 @@ void game_move_cursor(struct game_t *game, int dx, int dy)
 
 void game_update_cursor(struct game_t *game)
 {
-	int scr_x = getbegx(game->game_window) + game->cursor_x * 2;
-	int scr_y = getbegy(game->game_window) + game->cursor_y;
+	int scr_x = getbegx(game->game_window) + 2 + game->cursor_x * 2;
+	int scr_y = getbegy(game->game_window) + 1 + game->cursor_y;
 	
 	wmove(stdscr, scr_y, scr_x);
 }
@@ -255,7 +230,7 @@ void initialize_gui()
 	cbreak();
 	keypad(stdscr, TRUE);
 	noecho();
-	mousemask(ALL_MOUSE_EVENTS, NULL);
+	curs_set(2);
 	start_color();
 	
 	/* Color pairs */

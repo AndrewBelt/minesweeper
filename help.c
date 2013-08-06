@@ -1,16 +1,24 @@
 #include "help.h"
 #include "config.h"
+#include <curses.h>
 
 
-void print_help(WINDOW *win)
+void print_help()
 {
-	wmove(win, 0, 0);
-	wprintw(win, "controls:\n");
-	wprintw(win, "move with the arrow keys\n");
-	wprintw(win, "%c\tdig cell\n", CONTROL_DIG);
-	wprintw(win, "%c\ttoggle flag\n", CONTROL_FLAG);
-	wprintw(win, "%c\ttoggle question\n", CONTROL_QUESTION);
-	wprintw(win, "%c\treveal all cells\n", CONTROL_REVEAL);
-	wprintw(win, "%c\trestart\n", CONTROL_RESTART);
-	wprintw(win, "%c\tquit\n", CONTROL_QUIT);
+	def_prog_mode();
+	endwin();
+	
+	printf("arrow keys move\n");
+	printf("wasd moves by %d cells\n", WASD_SPEED);
+	printf("'%c'\tdig cell\n", CONTROL_DIG);
+	printf("'%c'\ttoggle flag\n", CONTROL_FLAG);
+	printf("'%c'\ttoggle question\n", CONTROL_QUESTION);
+	printf("'%c'\treveal all cells\n", CONTROL_REVEAL);
+	printf("'%c'\trestart\n", CONTROL_RESTART);
+	printf("'%c'\tquit\n", CONTROL_QUIT);
+	printf("press enter to continue\n");
+	
+	getch();
+	reset_prog_mode();
+	refresh();
 }

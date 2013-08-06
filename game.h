@@ -36,7 +36,6 @@ void game_destroy(struct game_t *game);
 void game_start(struct game_t *game);
 void game_loop(struct game_t *game);
 void game_handle_key(struct game_t *game, int ch);
-void game_handle_mouse(struct game_t *game, MEVENT *event);
 
 /* Game state */
 

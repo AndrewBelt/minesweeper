@@ -260,15 +260,19 @@ int grid_get_char(struct grid_t *grid, int x, int y)
 }
 
 
-void grid_print_cell(struct grid_t *grid, WINDOW *win, int x, int y)
+void grid_print_cell(struct grid_t *grid, WINDOW *window, int x, int y)
 {
+	int scr_x = 2 * x + 2;
+	int scr_y = y + 1;
 	int cell_char = grid_get_char(grid, x, y);
-	mvwaddch(win, y, 2 * x, cell_char);
+	mvwaddch(window, scr_y, scr_x, cell_char);
 }
 
 
-void grid_display(struct grid_t *grid, WINDOW *win)
+void grid_display(struct grid_t *grid, WINDOW *window)
 {
+	box(window, 0, 0);
+	
 	int x;
 	int y;
 	
@@ -276,9 +280,20 @@ void grid_display(struct grid_t *grid, WINDOW *win)
 	{
 		for (x = 0; x < grid->width; x++)
 		{
-			grid_print_cell(grid, win, x, y);
+			grid_print_cell(grid, window, x, y);
 		}
 	}
 	
-	wrefresh(win);
+	wrefresh(window);
+}
+
+
+WINDOW *grid_new_window(struct grid_t *grid)
+{
+	int x = 0;
+	int y = 2;
+	int width = grid->width * 2 + 3;
+	int height = grid->height + 2;
+	
+	return newwin(height, width, y, x);
 }

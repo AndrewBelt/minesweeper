@@ -63,7 +63,8 @@ int grid_is_win(struct grid_t *grid);
 int grid_count_cells(struct grid_t *grid, enum cell_state state);
 
 int grid_get_char(struct grid_t *grid, int x, int y);
-void grid_print_cell(struct grid_t *grid, WINDOW *win, int x, int y);
-void grid_display(struct grid_t *grid, WINDOW *win);
+void grid_print_cell(struct grid_t *grid, WINDOW *window, int x, int y);
+void grid_display(struct grid_t *grid, WINDOW *window);
+WINDOW *grid_new_window(struct grid_t *grid);
 
 #endif
